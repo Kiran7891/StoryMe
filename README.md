@@ -64,7 +64,7 @@ pnpm build             # build everything via Turborepo
 - [x] **Phase 3** — Backend API (NestJS, 28 endpoints, OpenAPI) — booted + verified on Postgres
 - [x] **Phase 4** — Authentication (JWT verify, RBAC, RLS-scoped queries)
 - [x] **Phase 5** — Shared typed API SDK (@storyme/api-client)
-- [ ] Phase 6 — Web app
+- [x] **Phase 6** — Web app (Next.js: landing/SEO, auth, feed, create flow, reader) — builds
 - [ ] Phase 7 — Mobile app
 - [ ] Phase 8 — Admin portal
 - [x] **Phase 9** — Background workers (BullMQ pipeline) — verified vs Postgres + Redis
