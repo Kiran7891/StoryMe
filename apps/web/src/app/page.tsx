@@ -56,19 +56,28 @@ export default function LandingPage() {
         <p className="mb-6 text-center text-sm text-ink-500">
           The same hero — your hero — in every style.
         </p>
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-5">
-          {STYLES.map((s) => (
-            <div key={s.key} className="comic-panel overflow-hidden rounded-lg text-center">
-              <BrandImage
-                src={`/brand/style-${s.key}.webp`}
-                alt={`${s.label} style sample`}
-                className="aspect-square w-full object-cover"
-                fallback={<div className="flex aspect-square items-center justify-center text-4xl">{s.emoji}</div>}
-              />
-              <div className="bg-white py-2 font-semibold">{s.label}</div>
+        <BrandImage
+          src="/brand/style-strip.webp"
+          alt="The same hero character drawn in manga, superhero, chibi, noir, and watercolor styles"
+          className="comic-panel w-full rounded-lg"
+          fallback={
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-5">
+              {STYLES.map((s) => (
+                <div key={s.key} className="comic-panel overflow-hidden rounded-lg text-center">
+                  <BrandImage
+                    src={`/brand/style-${s.key}.webp`}
+                    alt={`${s.label} style sample`}
+                    className="aspect-square w-full object-cover"
+                    fallback={
+                      <div className="flex aspect-square items-center justify-center text-4xl">{s.emoji}</div>
+                    }
+                  />
+                  <div className="bg-white py-2 font-semibold">{s.label}</div>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
+          }
+        />
       </section>
 
       <section className="mx-auto max-w-5xl px-6 pb-24">
