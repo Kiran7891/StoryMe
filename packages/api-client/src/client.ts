@@ -10,6 +10,8 @@ import type {
 } from '@storyme/validation';
 import { type ApiClientOptions, HttpCore } from './http.js';
 import type {
+  AdminMetrics,
+  AdminUser,
   Character,
   Comic,
   Comment,
@@ -18,6 +20,7 @@ import type {
   CreateUploadResult,
   FeedItem,
   Me,
+  Report,
 } from './types.js';
 
 const V = '/v1';
@@ -92,6 +95,25 @@ export class StoryMeClient {
 
   // --- Public ---
   getPublicComic = (slug: string) => this.http.request<ComicWithPanels>(`${V}/public/comics/${slug}`);
+
+  // --- Admin (requires admin role) ---
+  admin = {
+    listUsers: (query?: { limit?: number }) =>
+      this.http.request<AdminUser[]>(`${V}/admin/users`, { query }),
+    moderationQueue: (query?: { limit?: number }) =>
+      this.http.request<Report[]>(`${V}/admin/comics`, { query }),
+    moderateComic: (id: string, decision: 'approved' | 'rejected') =>
+      this.http.request<{ id: string; moderation: string }>(`${V}/admin/comics/${id}/moderate`, {
+        method: 'POST',
+        body: { decision },
+      }),
+    grantCredits: (userId: string, amount: number, reason: string) =>
+      this.http.request<{ status: string; amount: number }>(`${V}/admin/users/${userId}/credits`, {
+        method: 'POST',
+        body: { amount, reason },
+      }),
+    metrics: () => this.http.request<AdminMetrics>(`${V}/admin/metrics`),
+  };
 }
 
 export type { ApiClientOptions };

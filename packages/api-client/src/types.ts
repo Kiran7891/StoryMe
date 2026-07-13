@@ -93,3 +93,28 @@ export interface CreateUploadResult {
   storageKey: string;
   expiresInSeconds: number;
 }
+
+export interface AdminUser {
+  id: string;
+  email: string;
+  handle: string | null;
+  role: UserRole;
+  createdAt: string;
+  deletedAt: string | null;
+}
+
+export interface Report {
+  id: string;
+  reporterId: string;
+  comicId: string | null;
+  commentId: string | null;
+  reason: string;
+  status: string;
+  createdAt: string;
+}
+
+export interface AdminMetrics {
+  users: number;
+  comics: number;
+  openReports: number;
+}
