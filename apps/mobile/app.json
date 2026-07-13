@@ -1,0 +1,39 @@
+{
+  "expo": {
+    "name": "StoryMe",
+    "slug": "storyme",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "scheme": "storyme",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "app.storyme.mobile",
+      "associatedDomains": ["applinks:storyme.app"],
+      "infoPlist": {
+        "NSCameraUsageDescription": "StoryMe uses your camera to add photos of your character.",
+        "NSPhotoLibraryUsageDescription": "StoryMe needs access to your photos to create your comic."
+      }
+    },
+    "android": {
+      "package": "app.storyme.mobile",
+      "permissions": ["CAMERA", "READ_MEDIA_IMAGES"],
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [{ "scheme": "https", "host": "storyme.app" }],
+          "category": ["BROWSABLE", "DEFAULT"]
+        }
+      ]
+    },
+    "plugins": ["expo-router", "expo-secure-store", "expo-image-picker"],
+    "extra": {
+      "apiBaseUrl": "http://localhost:3001",
+      "supabaseUrl": "",
+      "supabaseAnonKey": "",
+      "cdnBaseUrl": ""
+    }
+  }
+}

@@ -65,7 +65,7 @@ pnpm build             # build everything via Turborepo
 - [x] **Phase 4** — Authentication (JWT verify, RBAC, RLS-scoped queries)
 - [x] **Phase 5** — Shared typed API SDK (@storyme/api-client)
 - [x] **Phase 6** — Web app (Next.js: landing/SEO, auth, feed, create flow, reader) — builds
-- [ ] Phase 7 — Mobile app
+- [x] **Phase 7** — Mobile app (Expo/React Native: auth, feed, create w/ camera roll, reader) — typechecks
 - [x] **Phase 8** — Admin portal (Next.js: metrics, moderation queue, users) — builds
 - [x] **Phase 9** — Background workers (BullMQ pipeline) — verified vs Postgres + Redis
 - [x] **Phase 10** — AI service layer (provider-agnostic, mock+Fireworks+Replicate)
