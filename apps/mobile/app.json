@@ -7,6 +7,12 @@
     "scheme": "storyme",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
+    "icon": "./assets/icon.png",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "cover",
+      "backgroundColor": "#F5451F"
+    },
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "app.storyme.mobile",
@@ -18,6 +24,10 @@
     },
     "android": {
       "package": "app.storyme.mobile",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#F5451F"
+      },
       "permissions": ["CAMERA", "READ_MEDIA_IMAGES"],
       "intentFilters": [
         {

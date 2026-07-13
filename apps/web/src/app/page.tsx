@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { ComicStyle } from '@storyme/shared-types';
+import { BrandHero, BrandImage } from '@/components/brand-image';
 
 // Marketing landing page — statically rendered for SEO/performance.
 const STYLES: { key: string; label: string; emoji: string }[] = [
@@ -45,15 +46,26 @@ export default function LandingPage() {
             Explore the feed →
           </Link>
         </div>
+        <div className="mx-auto mt-12 max-w-3xl">
+          <BrandHero className="comic-panel w-full rounded-xl" />
+        </div>
       </section>
 
       <section className="mx-auto max-w-5xl px-6 pb-16">
         <h2 className="mb-6 text-center text-2xl font-bold">Pick a style you love</h2>
+        <p className="mb-6 text-center text-sm text-ink-500">
+          The same hero — your hero — in every style.
+        </p>
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-5">
           {STYLES.map((s) => (
-            <div key={s.key} className="comic-panel rounded-lg p-6 text-center">
-              <div className="text-4xl">{s.emoji}</div>
-              <div className="mt-2 font-semibold">{s.label}</div>
+            <div key={s.key} className="comic-panel overflow-hidden rounded-lg text-center">
+              <BrandImage
+                src={`/brand/style-${s.key}.webp`}
+                alt={`${s.label} style sample`}
+                className="aspect-square w-full object-cover"
+                fallback={<div className="flex aspect-square items-center justify-center text-4xl">{s.emoji}</div>}
+              />
+              <div className="bg-white py-2 font-semibold">{s.label}</div>
             </div>
           ))}
         </div>
