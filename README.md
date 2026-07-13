@@ -69,7 +69,7 @@ pnpm build             # build everything via Turborepo
 - [ ] Phase 8 — Admin portal
 - [x] **Phase 9** — Background workers (BullMQ pipeline) — verified vs Postgres + Redis
 - [x] **Phase 10** — AI service layer (provider-agnostic, mock+Fireworks+Replicate)
-- [ ] Phase 11 — Payments
+- [x] **Phase 11** — Payments (Stripe + RevenueCat webhooks, idempotent entitlements)
 - [ ] Phase 12 — Notifications
 - [ ] Phase 13 — Testing
 - [x] **Phase 14** — CI/CD (GitHub Actions: build, lint, typecheck, test w/ Postgres, security scan)

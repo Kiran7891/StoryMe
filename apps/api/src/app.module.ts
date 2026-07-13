@@ -5,6 +5,7 @@ import { CreditsModule } from './modules/credits/credits.module.js';
 import { InfraModule } from './infra/infra.module.js';
 import { JwtAuthGuard } from './infra/jwt-auth.guard.js';
 import { AdminModule } from './modules/admin/admin.module.js';
+import { BillingModule } from './modules/billing/billing.module.js';
 import { CharactersModule } from './modules/characters/characters.module.js';
 import { ComicsModule } from './modules/comics/comics.module.js';
 import { HealthModule } from './modules/health/health.module.js';
@@ -24,6 +25,7 @@ import { UploadsModule } from './modules/uploads/uploads.module.js';
     ComicsModule,
     SocialModule,
     PublicModule,
+    BillingModule,
     AdminModule,
   ],
   providers: [

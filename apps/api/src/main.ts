@@ -11,7 +11,8 @@ import { env } from './infra/env.js';
 
 async function bootstrap(): Promise<void> {
   const config = env();
-  const app = await NestFactory.create(AppModule, { bufferLogs: false });
+  // rawBody enables Stripe webhook signature verification against the exact payload.
+  const app = await NestFactory.create(AppModule, { bufferLogs: false, rawBody: true });
 
   app.use(helmet());
   app.enableCors({

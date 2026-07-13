@@ -41,7 +41,10 @@ export const serverEnvSchema = z.object({
   // Payments
   STRIPE_SECRET_KEY: z.string().optional(),
   STRIPE_WEBHOOK_SECRET: z.string().optional(),
+  STRIPE_PRICE_PLUS: z.string().optional(),
+  STRIPE_PRICE_PRO: z.string().optional(),
   REVENUECAT_WEBHOOK_SECRET: z.string().optional(),
+  WEB_BASE_URL: z.string().url().default('http://localhost:3000'),
 
   // Integrations
   RESEND_API_KEY: z.string().optional(),

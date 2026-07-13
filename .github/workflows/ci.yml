@@ -29,9 +29,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # pnpm version comes from the "packageManager" field in package.json.
       - uses: pnpm/action-setup@v4
-        with:
-          version: 9
 
       - uses: actions/setup-node@v4
         with:
@@ -57,16 +56,17 @@ jobs:
         run: pnpm test
 
   security:
-    name: Dependency + secret scan
+    name: Dependency audit
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
         with:
-          fetch-depth: 0
-      - name: Trivy filesystem scan
-        uses: aquasecurity/trivy-action@0.24.0
-        with:
-          scan-type: fs
-          scanners: vuln,secret
-          severity: CRITICAL,HIGH
-          exit-code: '0' # report only for MVP; flip to '1' to enforce
+          node-version: 20
+          cache: pnpm
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Audit dependencies (report-only for MVP)
+        run: pnpm audit --audit-level=high || true
+      # Secret scanning is handled by GitHub native push protection.
