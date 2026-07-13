@@ -60,7 +60,7 @@ pnpm build             # build everything via Turborepo
 
 - [x] Design: architecture, scope, stack, cost, plan
 - [x] **Phase 1** — Monorepo init + shared config packages
-- [ ] Phase 2 — Database schema (migrations, RLS, seed)
+- [x] **Phase 2** — Database schema (migrations, RLS, triggers, seed) — validated on Postgres 16
 - [ ] Phase 3 — Backend API (NestJS)
 - [ ] Phase 4 — Authentication
 - [ ] Phase 5 — Shared API SDK
