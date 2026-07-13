@@ -1,5 +1,6 @@
 import { Body, Controller, Get, Param, ParseUUIDPipe, Post, Query } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { Throttle } from '@nestjs/throttler';
 import { createComicSchema, paginationSchema, shareComicSchema } from '@storyme/validation';
 import type { CreateComicInput, ShareComicInput } from '@storyme/validation';
 import { type AuthUser, CurrentUser } from '../../common/decorators.js';
@@ -22,6 +23,8 @@ export class ComicsController {
     return this.comics.list(user.id, parsedLimit, cursor);
   }
 
+  // Generation is the AI-cost path: cap it well below the global limit.
+  @Throttle({ default: { ttl: 60_000, limit: 10 } })
   @Post()
   create(
     @CurrentUser() user: AuthUser,

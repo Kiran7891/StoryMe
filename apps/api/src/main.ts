@@ -6,13 +6,15 @@ import { API_VERSION, REQUEST_ID_HEADER } from '@storyme/shared-types';
 import type { NextFunction, Request, Response } from 'express';
 import helmet from 'helmet';
 import { nanoid } from 'nanoid';
+import { Logger as PinoLogger } from 'nestjs-pino';
 import { AppModule } from './app.module.js';
 import { env } from './infra/env.js';
 
 async function bootstrap(): Promise<void> {
   const config = env();
   // rawBody enables Stripe webhook signature verification against the exact payload.
-  const app = await NestFactory.create(AppModule, { bufferLogs: false, rawBody: true });
+  const app = await NestFactory.create(AppModule, { bufferLogs: true, rawBody: true });
+  app.useLogger(app.get(PinoLogger));
 
   app.use(helmet());
   app.enableCors({

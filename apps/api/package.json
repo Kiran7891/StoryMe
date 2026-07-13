@@ -16,6 +16,7 @@
     "@nestjs/core": "^10.4.4",
     "@nestjs/platform-express": "^10.4.4",
     "@nestjs/swagger": "^8.0.1",
+    "@nestjs/throttler": "^6.2.1",
     "@storyme/config": "workspace:*",
     "@storyme/database": "workspace:*",
     "@storyme/shared-types": "workspace:*",

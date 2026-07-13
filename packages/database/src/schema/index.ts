@@ -176,6 +176,7 @@ export const idempotencyKeys = pgTable('idempotency_keys', {
   key: text('key').primaryKey(),
   userId: uuid('user_id').references(() => users.id, { onDelete: 'cascade' }),
   responseHash: text('response_hash'),
+  responseBody: jsonb('response_body'),
   statusCode: integer('status_code'),
   createdAt,
 });
