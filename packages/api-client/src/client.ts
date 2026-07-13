@@ -20,6 +20,7 @@ import type {
   CreateUploadResult,
   FeedItem,
   Me,
+  Notification,
   Report,
 } from './types.js';
 
@@ -92,6 +93,18 @@ export class StoryMeClient {
   follow = (userId: string) => this.http.request<{ status: string }>(`${V}/users/${userId}/follow`, { method: 'POST' });
   unfollow = (userId: string) =>
     this.http.request<{ status: string }>(`${V}/users/${userId}/follow`, { method: 'DELETE' });
+  reportComic = (comicId: string, reason: string) =>
+    this.http.request<{ status: string }>(`${V}/comics/${comicId}/report`, { method: 'POST', body: { reason } });
+  reportComment = (commentId: string, reason: string) =>
+    this.http.request<{ status: string }>(`${V}/comments/${commentId}/report`, { method: 'POST', body: { reason } });
+
+  // --- Notifications ---
+  notifications = (query?: { limit?: number; cursor?: string }) =>
+    this.http.request<Notification[]>(`${V}/notifications`, { query });
+  markNotificationRead = (id: string) =>
+    this.http.request<{ status: string }>(`${V}/notifications/${id}/read`, { method: 'POST' });
+  markAllNotificationsRead = () =>
+    this.http.request<{ status: string }>(`${V}/notifications/read-all`, { method: 'POST' });
 
   // --- Public ---
   getPublicComic = (slug: string) => this.http.request<ComicWithPanels>(`${V}/public/comics/${slug}`);

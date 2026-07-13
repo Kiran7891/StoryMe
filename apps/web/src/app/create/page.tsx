@@ -19,11 +19,12 @@ export default function CreatePage() {
   const [characterId, setCharacterId] = useState<string>('');
   const [prompt, setPrompt] = useState('');
   const [style, setStyle] = useState<string>(ComicStyle.Manga);
+  const [format, setFormat] = useState<'book' | 'reel'>('book');
   const [panelCount, setPanelCount] = useState<number>(COMIC_LIMITS.DEFAULT_PANELS);
 
   const createComic = useMutation({
     mutationFn: () =>
-      getApi().createComic({ characterId, prompt, style: style as any, panelCount }, crypto.randomUUID()),
+      getApi().createComic({ characterId, prompt, style: style as any, format, panelCount }, crypto.randomUUID()),
     onSuccess: (comic) => {
       qc.invalidateQueries({ queryKey: ['comics'] });
       router.push(`/comic/${comic.id}`);
@@ -76,6 +77,23 @@ export default function CreatePage() {
             placeholder="A brave astronaut explores a candy planet and saves the gummy bears…"
             className="w-full rounded-lg border border-ink-200 px-3 py-2"
           />
+        </div>
+
+        <div>
+          <label className="mb-1 block text-sm font-semibold">Format</label>
+          <div className="flex gap-2">
+            {(['book', 'reel'] as const).map((f) => (
+              <button
+                key={f}
+                onClick={() => setFormat(f)}
+                className={`flex-1 rounded-lg border px-3 py-2 text-sm capitalize ${
+                  format === f ? 'border-brand-500 bg-brand-50 text-brand-700' : 'border-ink-200'
+                }`}
+              >
+                {f === 'book' ? '📖 Book' : '🎬 Reel'}
+              </button>
+            ))}
+          </div>
         </div>
 
         <div>

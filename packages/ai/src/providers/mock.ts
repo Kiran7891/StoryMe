@@ -8,14 +8,18 @@ import type {
   TextProvider,
   UsageRecord,
 } from '../types.js';
+import { solidPng } from './png.js';
 
-// A tiny valid 1x1 transparent PNG — stands in for a generated panel in local/dev/test.
-const ONE_BY_ONE_PNG = Uint8Array.from(
-  atob(
-    'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==',
-  ),
-  (c) => c.charCodeAt(0),
-);
+// Distinct solid colors per panel index so mock frames are visually different and
+// large enough to be decoded/encoded by image and video tooling (books + reels).
+const PANEL_COLORS: Array<[number, number, number]> = [
+  [245, 69, 31],
+  [44, 199, 176],
+  [124, 92, 252],
+  [255, 201, 60],
+  [43, 127, 255],
+  [226, 58, 69],
+];
 
 const BLOCKED = ['nsfw', 'explicit', 'gore', 'nude'];
 
@@ -51,9 +55,10 @@ export class MockTextProvider implements TextProvider {
 
 export class MockImageProvider implements ImageProvider {
   readonly name = 'mock';
-  async generatePanel(_req: PanelImageRequest) {
+  async generatePanel(req: PanelImageRequest) {
+    const color = PANEL_COLORS[req.panelIndex % PANEL_COLORS.length]!;
     return {
-      image: { data: ONE_BY_ONE_PNG, contentType: 'image/png' },
+      image: { data: solidPng(512, 640, color), contentType: 'image/png' },
       usage: {
         provider: this.name,
         operation: 'image' as const,

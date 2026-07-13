@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, Param, ParseUUIDPipe, Post, Query } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { createCommentSchema, paginationSchema, repostSchema } from '@storyme/validation';
-import type { CreateCommentInput, RepostInput } from '@storyme/validation';
+import { createCommentSchema, paginationSchema, reportSchema, repostSchema } from '@storyme/validation';
+import type { CreateCommentInput, ReportInput, RepostInput } from '@storyme/validation';
 import { type AuthUser, CurrentUser } from '../../common/decorators.js';
 import { ZodValidationPipe } from '../../common/zod-validation.pipe.js';
 import { SocialService } from './social.service.js';
@@ -76,6 +76,24 @@ export class SocialController {
   @Post('comics/:id/view')
   view(@Param('id', ParseUUIDPipe) id: string) {
     return this.social.recordView(id);
+  }
+
+  @Post('comics/:id/report')
+  reportComic(
+    @CurrentUser() user: AuthUser,
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body(new ZodValidationPipe(reportSchema)) body: ReportInput,
+  ) {
+    return this.social.report(user.id, { comicId: id }, body.reason);
+  }
+
+  @Post('comments/:id/report')
+  reportComment(
+    @CurrentUser() user: AuthUser,
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body(new ZodValidationPipe(reportSchema)) body: ReportInput,
+  ) {
+    return this.social.report(user.id, { commentId: id }, body.reason);
   }
 
   @Post('users/:id/follow')

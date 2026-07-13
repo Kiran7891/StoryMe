@@ -5,8 +5,9 @@ import { JOB_QUEUE_NAME, JobType } from '@storyme/shared-types';
 import { Worker } from 'bullmq';
 import pino from 'pino';
 import { ComicPipeline, type PipelineDeps } from './pipeline.js';
-import { S3StorageUploader } from './storage.js';
+import { createUploader } from './storage.js';
 import { ChannelNotifier, ExpoPushSender, ResendEmailSender } from './notifications.js';
+import { GdprProcessor } from './gdpr.js';
 
 const logger = pino({ level: process.env.LOG_LEVEL ?? 'info' });
 
@@ -27,14 +28,9 @@ function main(): void {
     : null;
   const notifier = new ChannelNotifier(runAsAdmin, logger, push, email);
 
-  const pipeline = new ComicPipeline({
-    db,
-    runAsAdmin,
-    ai,
-    uploader: new S3StorageUploader(env),
-    logger,
-    notifier,
-  });
+  const uploader = createUploader(env);
+  const pipeline = new ComicPipeline({ db, runAsAdmin, ai, uploader, logger, notifier });
+  const gdpr = new GdprProcessor({ runAsAdmin, uploader, logger });
 
   const worker = new Worker(
     JOB_QUEUE_NAME,
@@ -44,10 +40,14 @@ function main(): void {
         case JobType.GenerateComic:
           await pipeline.generateComic(job.data.comicId as string);
           break;
-        case JobType.Notify:
         case JobType.Cleanup:
+          if (job.data.kind === 'account_deletion') await gdpr.deleteAccount(job.data.userId as string);
+          break;
         case JobType.Export:
-          logger.info({ name: job.name, data: job.data }, 'job type not yet implemented; acking');
+          if (job.data.kind === 'data_export') await gdpr.exportData(job.data.userId as string);
+          break;
+        case JobType.Notify:
+          logger.info({ data: job.data }, 'notify job');
           break;
         default:
           logger.warn({ name: job.name }, 'unknown job type');

@@ -50,6 +50,7 @@ export const createComicSchema = z.object({
     .min(COMIC_LIMITS.MIN_PROMPT_CHARS)
     .max(COMIC_LIMITS.MAX_PROMPT_CHARS),
   style: z.enum(comicStyleValues),
+  format: z.enum(['book', 'reel']).default('book'),
   panelCount: z
     .number()
     .int()
@@ -85,6 +86,12 @@ export const repostSchema = z.object({
   caption: z.string().trim().max(500).optional(),
 });
 export type RepostInput = z.infer<typeof repostSchema>;
+
+/** POST /v1/comics/:id/report and /v1/comments/:id/report */
+export const reportSchema = z.object({
+  reason: z.string().trim().min(1).max(500),
+});
+export type ReportInput = z.infer<typeof reportSchema>;
 
 /** POST /v1/notifications/register-device */
 export const registerDeviceSchema = z.object({

@@ -17,6 +17,8 @@ RUN pnpm --filter @storyme/worker --prod deploy /out
 FROM node:20-alpine AS runner
 ENV NODE_ENV=production
 WORKDIR /app
+# ffmpeg is required to assemble reel videos from panel frames.
+RUN apk add --no-cache ffmpeg
 RUN addgroup -S app && adduser -S app -G app
 COPY --from=build /out/dist ./dist
 COPY --from=build /out/node_modules ./node_modules

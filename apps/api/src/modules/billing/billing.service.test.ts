@@ -51,7 +51,7 @@ describe.skipIf(!hasDb)('BillingService.handleStripeEvent (integration)', () => 
     return {
       id: `evt_${Date.now()}_${Math.random()}`,
       type: 'checkout.session.completed',
-      data: { object: { metadata: { userId, plan }, customer: 'cus_test' } },
+      data: { object: { metadata: { userId, plan }, customer: `cus_${userId}` } },
     } as unknown as Stripe.Event;
   }
 

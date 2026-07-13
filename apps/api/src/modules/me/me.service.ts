@@ -63,7 +63,7 @@ export class MeService {
       tx.update(schema.users).set({ deletedAt: new Date() }).where(eq(schema.users.id, userId)),
     );
     await this.queue.enqueue(JobType.Cleanup, { kind: 'account_deletion', userId }, {
-      jobId: `account-deletion:${userId}`,
+      jobId: `account-deletion-${userId}`,
     });
     return { status: 'scheduled' as const };
   }
@@ -71,7 +71,7 @@ export class MeService {
   /** GDPR portability — assemble an export bundle asynchronously. */
   async requestExport(userId: string) {
     await this.queue.enqueue(JobType.Export, { kind: 'data_export', userId }, {
-      jobId: `data-export:${userId}:${Date.now()}`,
+      jobId: `data-export-${userId}-${Date.now()}`,
     });
     return { status: 'processing' as const };
   }

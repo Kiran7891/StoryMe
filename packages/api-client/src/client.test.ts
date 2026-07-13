@@ -46,11 +46,11 @@ describe('StoryMeClient', () => {
       baseUrl: 'https://api.storyme.app',
       fetch: fetchImpl as unknown as typeof fetch,
     });
-    await expect(client.createComic({ characterId: 'c', prompt: 'xyz', style: 'noir', panelCount: 6 })).rejects.toMatchObject({
+    await expect(client.createComic({ characterId: 'c', prompt: 'xyz', style: 'noir', format: 'book', panelCount: 6 })).rejects.toMatchObject({
       status: 402,
     });
     await client
-      .createComic({ characterId: 'c', prompt: 'xyz', style: 'noir', panelCount: 6 })
+      .createComic({ characterId: 'c', prompt: 'xyz', style: 'noir', format: 'book', panelCount: 6 })
       .catch((err) => expect((err as ApiError).code).toBe('insufficient_credits'));
   });
 });

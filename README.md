@@ -75,6 +75,18 @@ pnpm build             # build everything via Turborepo
 - [x] **Phase 14** — CI/CD (GitHub Actions: build, lint, typecheck, test w/ Postgres, security scan)
 - [x] **Phase 15** — Deployment (Dockerfiles, runbook, CI); app-store submission via EAS
 
+### Final-product completion (post-phase hardening)
+
+- [x] **Reels** end-to-end — `format` on create (web + mobile), worker assembles a
+  1080×1920 H.264 MP4 via ffmpeg; verified producing a valid 10s vertical video
+- [x] **Notifications API** — list, mark-read, mark-all-read
+- [x] **Content reports** — report comics/comments into the admin moderation queue
+- [x] **GDPR jobs** — account-deletion purge (media + rows) and data-export bundle
+- [x] **Local storage driver** (`STORAGE_DRIVER=local`) for self-host / full-stack dev
+- [x] **Full-chain E2E verified** — real HTTP API → Redis/BullMQ → worker → ffmpeg →
+  storage → Postgres: a book and a reel generate end to end, credits debit,
+  notifications fire, sharing + public read work
+
 ## License
 
 Proprietary — © StoryMe. All rights reserved.

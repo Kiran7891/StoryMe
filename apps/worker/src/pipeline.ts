@@ -5,6 +5,7 @@ import { and, eq } from 'drizzle-orm';
 import type { Logger } from 'pino';
 import { StorageUploader } from './storage.js';
 import { type Notifier, NoopNotifier } from './notifications.js';
+import { type ReelFrame, ReelAssembler } from './reel.js';
 
 export interface PipelineDeps {
   db: Database;
@@ -14,6 +15,8 @@ export interface PipelineDeps {
   logger: Logger;
   /** Optional; defaults to a no-op notifier (used in tests/local). */
   notifier?: Notifier;
+  /** Optional reel assembler; defaults to a real ffmpeg-backed one. */
+  reelAssembler?: ReelAssembler;
 }
 
 /**
@@ -23,8 +26,10 @@ export interface PipelineDeps {
  */
 export class ComicPipeline {
   private readonly notifier: Notifier;
+  private readonly reelAssembler: ReelAssembler;
   constructor(private readonly deps: PipelineDeps) {
     this.notifier = deps.notifier ?? new NoopNotifier();
+    this.reelAssembler = deps.reelAssembler ?? new ReelAssembler(deps.logger);
   }
 
   async generateComic(comicId: string): Promise<void> {
@@ -85,6 +90,8 @@ export class ComicPipeline {
       });
 
       // 5. Render each panel image, upload it, and record progress.
+      const isReel = comic.format === 'reel';
+      const frames: ReelFrame[] = [];
       let coverKey: string | null = null;
       for (let i = 0; i < script.panels.length; i++) {
         const panel = script.panels[i]!;
@@ -99,6 +106,7 @@ export class ComicPipeline {
         const key = `comics/${comicId}/panel-${i}.${ext}`;
         await uploader.put(key, image.data, image.contentType);
         if (i === 0) coverKey = key;
+        if (isReel) frames.push({ data: image.data, contentType: image.contentType });
 
         await runAsAdmin((tx) =>
           tx
@@ -106,14 +114,23 @@ export class ComicPipeline {
             .set({ imageKey: key, status: 'ready' })
             .where(and(eq(schema.panels.comicId, comicId), eq(schema.panels.index, i))),
         );
-        await this.setProgress(comicId, Math.round(10 + ((i + 1) / script.panels.length) * 85));
+        await this.setProgress(comicId, Math.round(10 + ((i + 1) / script.panels.length) * 80));
+      }
+
+      // 5b. For reels, assemble a vertical MP4 from the frames and upload it.
+      let videoKey: string | null = null;
+      if (isReel) {
+        await this.setProgress(comicId, 92);
+        const mp4 = await this.reelAssembler.assemble(frames);
+        videoKey = `comics/${comicId}/reel.mp4`;
+        await uploader.put(videoKey, mp4, 'video/mp4');
       }
 
       // 6. Finalize.
       await runAsAdmin(async (tx) => {
         await tx
           .update(schema.comics)
-          .set({ status: ComicStatus.Complete, coverKey })
+          .set({ status: ComicStatus.Complete, coverKey, videoKey })
           .where(eq(schema.comics.id, comicId));
         await tx
           .insert(schema.comicStats)

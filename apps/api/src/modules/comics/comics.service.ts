@@ -124,7 +124,7 @@ export class ComicsService {
           title: input.title ?? null,
           prompt: input.prompt,
           style: input.style,
-          format: 'book',
+          format: input.format ?? 'book',
           panelCount,
           status: ComicStatus.Queued,
         })
@@ -148,7 +148,7 @@ export class ComicsService {
     await this.queue.enqueue(
       JobType.GenerateComic,
       { comicId: comic.id, userId },
-      { jobId: `generate:${comic.id}` },
+      { jobId: `generate-${comic.id}` }, // BullMQ job ids cannot contain ':'
     );
     return comic;
   }

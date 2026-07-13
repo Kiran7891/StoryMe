@@ -10,6 +10,7 @@ import { CharactersModule } from './modules/characters/characters.module.js';
 import { ComicsModule } from './modules/comics/comics.module.js';
 import { HealthModule } from './modules/health/health.module.js';
 import { MeModule } from './modules/me/me.module.js';
+import { NotificationsModule } from './modules/notifications/notifications.module.js';
 import { PublicModule } from './modules/public/public.module.js';
 import { SocialModule } from './modules/social/social.module.js';
 import { UploadsModule } from './modules/uploads/uploads.module.js';
@@ -24,6 +25,7 @@ import { UploadsModule } from './modules/uploads/uploads.module.js';
     UploadsModule,
     ComicsModule,
     SocialModule,
+    NotificationsModule,
     PublicModule,
     BillingModule,
     AdminModule,

@@ -118,3 +118,11 @@ export interface AdminMetrics {
   comics: number;
   openReports: number;
 }
+
+export interface Notification {
+  id: string;
+  type: string;
+  data: Record<string, unknown>;
+  readAt: string | null;
+  createdAt: string;
+}

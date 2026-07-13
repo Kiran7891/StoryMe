@@ -15,6 +15,11 @@ class InMemoryUploader implements StorageUploader {
   async put(key: string): Promise<void> {
     this.puts.push(key);
   }
+  async removePrefix(prefix: string): Promise<number> {
+    const before = this.puts.length;
+    this.puts = this.puts.filter((k) => !k.startsWith(prefix));
+    return before - this.puts.length;
+  }
 }
 
 describe.skipIf(!hasDb)('ComicPipeline (integration)', () => {
@@ -29,7 +34,7 @@ describe.skipIf(!hasDb)('ComicPipeline (integration)', () => {
     await closeDb();
   });
 
-  async function seedComic(prompt: string) {
+  async function seedComic(prompt: string, format: 'book' | 'reel' = 'book') {
     return runAsAdmin(async (tx) => {
       const [user] = await tx
         .insert(schema.users)
@@ -37,7 +42,7 @@ describe.skipIf(!hasDb)('ComicPipeline (integration)', () => {
         .returning();
       const [comic] = await tx
         .insert(schema.comics)
-        .values({ userId: user!.id, prompt, style: 'manga', panelCount: 3, status: ComicStatus.Queued })
+        .values({ userId: user!.id, prompt, style: 'manga', format, panelCount: 3, status: ComicStatus.Queued })
         .returning();
       await tx
         .insert(schema.jobs)
@@ -84,6 +89,27 @@ describe.skipIf(!hasDb)('ComicPipeline (integration)', () => {
     expect(panels).toHaveLength(3);
     expect(panels.every((p) => p.imageKey && p.status === 'ready')).toBe(true);
     expect(uploader.puts).toHaveLength(3);
+  });
+
+  it('assembles a reel MP4 for reel-format comics', async () => {
+    const { comicId } = await seedComic('a puppy learns to surf', 'reel');
+    const uploader = new InMemoryUploader();
+    const pipeline = new ComicPipeline({
+      db,
+      runAsAdmin,
+      ai: createAiService({ AI_TEXT_PROVIDER: 'mock', AI_IMAGE_PROVIDER: 'mock' }),
+      uploader,
+      logger,
+    });
+
+    await pipeline.generateComic(comicId);
+
+    const [comic] = await runAsAdmin((tx) =>
+      tx.select().from(schema.comics).where(eq(schema.comics.id, comicId)).limit(1),
+    );
+    expect(comic!.status).toBe(ComicStatus.Complete);
+    expect(comic!.videoKey).toMatch(/reel\.mp4$/);
+    expect(uploader.puts.some((k) => k.endsWith('reel.mp4'))).toBe(true);
   });
 
   it('blocks disallowed prompts and refunds credits', async () => {

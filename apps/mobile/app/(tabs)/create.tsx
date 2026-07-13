@@ -15,11 +15,12 @@ export default function Create() {
   const [characterId, setCharacterId] = useState('');
   const [prompt, setPrompt] = useState('');
   const [style, setStyle] = useState<string>(ComicStyle.Manga);
+  const [format, setFormat] = useState<'book' | 'reel'>('book');
 
   const createComic = useMutation({
     mutationFn: () =>
       api.createComic(
-        { characterId, prompt, style: style as never, panelCount: COMIC_LIMITS.DEFAULT_PANELS },
+        { characterId, prompt, style: style as never, format, panelCount: COMIC_LIMITS.DEFAULT_PANELS },
         String(Date.now()),
       ),
     onSuccess: (comic) => router.push(`/comic/${comic.id}`),
@@ -83,6 +84,11 @@ export default function Create() {
             multiline
             style={[inputStyle, { height: 100, textAlignVertical: 'top' }]}
           />
+          <Text style={label}>Format</Text>
+          <View style={{ flexDirection: 'row', gap: 8 }}>
+            <Chip active={format === 'book'} label="Book" onPress={() => setFormat('book')} />
+            <Chip active={format === 'reel'} label="Reel" onPress={() => setFormat('reel')} />
+          </View>
           <Text style={label}>Art style</Text>
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
             {STYLES.map((s) => (

@@ -152,6 +152,23 @@ export class SocialService {
     return { status: 'unfollowed' as const };
   }
 
+  /** File a content report (comic or comment) for admin moderation. */
+  async report(
+    reporterId: string,
+    target: { comicId?: string; commentId?: string },
+    reason: string,
+  ) {
+    await this.database.asAdmin((tx) =>
+      tx.insert(schema.reports).values({
+        reporterId,
+        comicId: target.comicId ?? null,
+        commentId: target.commentId ?? null,
+        reason,
+      }),
+    );
+    return { status: 'reported' as const };
+  }
+
   async recordView(comicId: string) {
     await this.database.asAdmin((tx) =>
       tx
