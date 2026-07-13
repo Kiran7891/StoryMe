@@ -4,6 +4,7 @@ import { ComicStatus, CREDIT_COST, JobStatus, JobType } from '@storyme/shared-ty
 import { and, eq } from 'drizzle-orm';
 import type { Logger } from 'pino';
 import { StorageUploader } from './storage.js';
+import { type Notifier, NoopNotifier } from './notifications.js';
 
 export interface PipelineDeps {
   db: Database;
@@ -11,6 +12,8 @@ export interface PipelineDeps {
   ai: AiService;
   uploader: StorageUploader;
   logger: Logger;
+  /** Optional; defaults to a no-op notifier (used in tests/local). */
+  notifier?: Notifier;
 }
 
 /**
@@ -19,7 +22,10 @@ export interface PipelineDeps {
  * the comic failed and refunds the reserved credits (compensating ledger entry).
  */
 export class ComicPipeline {
-  constructor(private readonly deps: PipelineDeps) {}
+  private readonly notifier: Notifier;
+  constructor(private readonly deps: PipelineDeps) {
+    this.notifier = deps.notifier ?? new NoopNotifier();
+  }
 
   async generateComic(comicId: string): Promise<void> {
     const { runAsAdmin, ai, uploader, logger } = this.deps;
@@ -120,6 +126,13 @@ export class ComicPipeline {
         await tx
           .insert(schema.notifications)
           .values({ userId: comic.userId, type: 'comic_ready', data: { comicId } });
+      });
+      await this.notifier.notify({
+        userId: comic.userId,
+        type: 'comic_ready',
+        title: 'Your comic is ready! 🎉',
+        body: comic.title ?? 'Tap to read your new comic.',
+        data: { comicId },
       });
       logger.info({ comicId, panels: script.panels.length }, 'comic generation complete');
     } catch (err) {

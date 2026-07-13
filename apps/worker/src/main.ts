@@ -6,6 +6,7 @@ import { Worker } from 'bullmq';
 import pino from 'pino';
 import { ComicPipeline, type PipelineDeps } from './pipeline.js';
 import { S3StorageUploader } from './storage.js';
+import { ChannelNotifier, ExpoPushSender, ResendEmailSender } from './notifications.js';
 
 const logger = pino({ level: process.env.LOG_LEVEL ?? 'info' });
 
@@ -19,12 +20,20 @@ function main(): void {
     logger.info({ usage }, 'ai_usage');
   });
 
+  // Notification channels — each is enabled only when configured.
+  const push = new ExpoPushSender(logger);
+  const email = env.RESEND_API_KEY
+    ? new ResendEmailSender(env.RESEND_API_KEY, 'StoryMe <no-reply@storyme.app>', logger)
+    : null;
+  const notifier = new ChannelNotifier(runAsAdmin, logger, push, email);
+
   const pipeline = new ComicPipeline({
     db,
     runAsAdmin,
     ai,
     uploader: new S3StorageUploader(env),
     logger,
+    notifier,
   });
 
   const worker = new Worker(

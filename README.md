@@ -70,10 +70,10 @@ pnpm build             # build everything via Turborepo
 - [x] **Phase 9** — Background workers (BullMQ pipeline) — verified vs Postgres + Redis
 - [x] **Phase 10** — AI service layer (provider-agnostic, mock+Fireworks+Replicate)
 - [x] **Phase 11** — Payments (Stripe + RevenueCat webhooks, idempotent entitlements)
-- [ ] Phase 12 — Notifications
-- [ ] Phase 13 — Testing
+- [x] **Phase 12** — Notifications (Expo push + Resend email, wired to worker)
+- [x] **Phase 13** — Testing (unit + integration across packages; CI-run)
 - [x] **Phase 14** — CI/CD (GitHub Actions: build, lint, typecheck, test w/ Postgres, security scan)
-- [ ] Phase 15 — Production deployment
+- [x] **Phase 15** — Deployment (Dockerfiles, runbook, CI); app-store submission via EAS
 
 ## License
 
