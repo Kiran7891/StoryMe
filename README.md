@@ -72,7 +72,7 @@ pnpm build             # build everything via Turborepo
 - [ ] Phase 11 — Payments
 - [ ] Phase 12 — Notifications
 - [ ] Phase 13 — Testing
-- [ ] Phase 14 — CI/CD
+- [x] **Phase 14** — CI/CD (GitHub Actions: build, lint, typecheck, test w/ Postgres, security scan)
 - [ ] Phase 15 — Production deployment
 
 ## License
