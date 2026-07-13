@@ -23,6 +23,7 @@ const updatedAt = timestamp('updated_at', { withTimezone: true }).notNull().defa
 export const users = pgTable('users', {
   id: uuid('id').primaryKey().defaultRandom(),
   email: text('email').notNull().unique(),
+  authSub: text('auth_sub').unique(),
   displayName: text('display_name'),
   handle: text('handle').unique(),
   avatarKey: text('avatar_key'),

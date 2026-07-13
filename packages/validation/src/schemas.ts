@@ -73,6 +73,19 @@ export const shareComicSchema = z.object({
 });
 export type ShareComicInput = z.infer<typeof shareComicSchema>;
 
+/** POST /v1/comics/:id/comments */
+export const createCommentSchema = z.object({
+  body: z.string().trim().min(1).max(1000),
+  parentId: uuidSchema.optional(),
+});
+export type CreateCommentInput = z.infer<typeof createCommentSchema>;
+
+/** POST /v1/comics/:id/repost */
+export const repostSchema = z.object({
+  caption: z.string().trim().max(500).optional(),
+});
+export type RepostInput = z.infer<typeof repostSchema>;
+
 /** POST /v1/notifications/register-device */
 export const registerDeviceSchema = z.object({
   platform: z.enum(['ios', 'android', 'web']),
