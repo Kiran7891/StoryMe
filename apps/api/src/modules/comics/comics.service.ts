@@ -102,6 +102,20 @@ export class ComicsService {
         throw new AppError('quota_exceeded', `Your plan allows up to ${PLAN_ENTITLEMENTS[plan].maxPanels} panels`);
       }
 
+      // The referenced character must belong to the requesting user.
+      const [character] = await tx
+        .select({ id: schema.characters.id })
+        .from(schema.characters)
+        .where(
+          and(
+            eq(schema.characters.id, input.characterId),
+            eq(schema.characters.userId, userId),
+            isNull(schema.characters.deletedAt),
+          ),
+        )
+        .limit(1);
+      if (!character) throw AppError.notFound('Character');
+
       const [comicRow] = await tx
         .insert(schema.comics)
         .values({

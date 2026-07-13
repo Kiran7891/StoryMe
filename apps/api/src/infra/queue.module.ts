@@ -1,9 +1,9 @@
 import { Global, Injectable, Logger, Module, type OnModuleDestroy } from '@nestjs/common';
-import type { JobType } from '@storyme/shared-types';
+import { JOB_QUEUE_NAME, type JobType } from '@storyme/shared-types';
 import { Queue } from 'bullmq';
 import { env } from './env.js';
 
-export const QUEUE_NAME = 'storyme-jobs';
+export const QUEUE_NAME = JOB_QUEUE_NAME;
 
 export interface EnqueueOptions {
   jobId?: string; // dedupe/idempotency at the queue level

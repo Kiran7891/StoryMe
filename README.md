@@ -67,8 +67,8 @@ pnpm build             # build everything via Turborepo
 - [ ] Phase 6 — Web app
 - [ ] Phase 7 — Mobile app
 - [ ] Phase 8 — Admin portal
-- [ ] Phase 9 — Background workers
-- [ ] Phase 10 — AI integration
+- [x] **Phase 9** — Background workers (BullMQ pipeline) — verified vs Postgres + Redis
+- [x] **Phase 10** — AI service layer (provider-agnostic, mock+Fireworks+Replicate)
 - [ ] Phase 11 — Payments
 - [ ] Phase 12 — Notifications
 - [ ] Phase 13 — Testing

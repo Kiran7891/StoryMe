@@ -28,6 +28,8 @@ export const PLAN_ENTITLEMENTS = {
   pro: { monthlyComics: 50, maxPanels: 12, watermark: false, priority: true },
 } as const;
 
+export const JOB_QUEUE_NAME = 'storyme-jobs' as const;
+
 export const API_VERSION = 'v1' as const;
 export const IDEMPOTENCY_HEADER = 'Idempotency-Key' as const;
 export const REQUEST_ID_HEADER = 'X-Request-Id' as const;
