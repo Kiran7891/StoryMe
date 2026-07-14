@@ -77,6 +77,7 @@ export interface FeedItem {
   publishedAt: string | null;
   likeCount: number;
   commentCount: number;
+  likedByMe: boolean;
 }
 
 export interface Comment {
