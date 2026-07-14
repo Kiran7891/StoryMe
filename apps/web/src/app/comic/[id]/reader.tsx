@@ -1,7 +1,9 @@
 'use client';
+import { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { getApi, mediaUrl } from '@/lib/api';
 import { Button, Card, Spinner } from '@/components/ui';
+import { ShareBar } from '@/components/share-bar';
 
 export function ComicReader({ id }: { id: string }) {
   const qc = useQueryClient();
@@ -29,15 +31,20 @@ export function ComicReader({ id }: { id: string }) {
     );
   }
   if (comic.error || !comic.data) {
-    return <p className="p-8 text-danger">Could not load this comic.</p>;
+    return <p className="p-8 text-danger">Could not load this story.</p>;
   }
 
   const c = comic.data;
   const generating = c.status === 'queued' || c.status === 'processing';
+  const isReel = c.format === 'reel';
+  const videoUrl = mediaUrl(c.videoKey);
+  const publicUrl = c.shareSlug
+    ? `${typeof window !== 'undefined' ? window.location.origin : ''}/s/${c.shareSlug}`
+    : null;
 
   return (
     <main className="mx-auto max-w-2xl px-4 py-8">
-      <h1 className="text-3xl font-black">{c.title ?? 'Your comic'}</h1>
+      <h1 className="text-3xl font-black">{c.title ?? 'Your story'}</h1>
       <p className="mb-6 text-sm uppercase tracking-wide text-ink-400">
         {c.style} · {c.format} · {c.status}
       </p>
@@ -46,7 +53,7 @@ export function ComicReader({ id }: { id: string }) {
         <Card className="mb-6 flex items-center gap-3">
           <Spinner />
           <div>
-            <p className="font-semibold">Creating your comic…</p>
+            <p className="font-semibold">Creating your {isReel ? 'reel' : 'comic'}…</p>
             <p className="text-sm text-ink-500">This usually takes a minute or two. This page updates automatically.</p>
           </div>
         </Card>
@@ -59,6 +66,14 @@ export function ComicReader({ id }: { id: string }) {
         </Card>
       )}
 
+      {/* Reel: vertical video front and center */}
+      {isReel && videoUrl && (
+        <div className="mx-auto mb-6 max-w-sm overflow-hidden rounded-2xl bg-ink-900">
+          <video src={videoUrl} className="aspect-[9/16] w-full" controls playsInline preload="metadata" />
+        </div>
+      )}
+
+      {/* Book pages (or the reel's storyboard) */}
       <div className="space-y-4">
         {c.panels.map((panel) => {
           const url = mediaUrl(panel.imageKey);
@@ -86,22 +101,67 @@ export function ComicReader({ id }: { id: string }) {
       </div>
 
       {c.status === 'complete' && (
-        <div className="mt-6 flex gap-3">
-          <Button onClick={() => share.mutate(!c.isPublic)} disabled={share.isPending}>
-            {c.isPublic ? 'Make private' : 'Share to feed'}
-          </Button>
-          {c.shareSlug && c.isPublic && (
-            <a
-              className="rounded-lg border border-ink-200 px-4 py-2 font-semibold"
-              href={`/s/${c.shareSlug}`}
-              target="_blank"
-              rel="noreferrer"
-            >
-              View public link ↗
-            </a>
+        <Card className="mt-6 space-y-4">
+          <div className="flex items-center justify-between">
+            <p className="font-semibold">{c.isPublic ? 'Shared to the feed' : 'Private'}</p>
+            <Button onClick={() => share.mutate(!c.isPublic)} disabled={share.isPending}>
+              {c.isPublic ? 'Make private' : 'Share to feed'}
+            </Button>
+          </div>
+          {c.isPublic && publicUrl && (
+            <ShareBar url={publicUrl} title={c.title ?? 'My StoryMe story'} videoUrl={isReel ? videoUrl : null} />
           )}
-        </div>
+        </Card>
       )}
+
+      {c.status === 'complete' && <Comments comicId={id} />}
     </main>
+  );
+}
+
+function Comments({ comicId }: { comicId: string }) {
+  const qc = useQueryClient();
+  const [body, setBody] = useState('');
+
+  const comments = useQuery({
+    queryKey: ['comments', comicId],
+    queryFn: () => getApi().listComments(comicId, { limit: 50 }),
+  });
+
+  const add = useMutation({
+    mutationFn: () => getApi().addComment(comicId, { body }),
+    onSuccess: () => {
+      setBody('');
+      qc.invalidateQueries({ queryKey: ['comments', comicId] });
+    },
+  });
+
+  return (
+    <Card className="mt-6">
+      <h2 className="mb-3 font-semibold">Comments</h2>
+      <div className="mb-4 flex gap-2">
+        <input
+          value={body}
+          onChange={(e) => setBody(e.target.value)}
+          onKeyDown={(e) => e.key === 'Enter' && body.trim() && add.mutate()}
+          placeholder="Add a comment…"
+          maxLength={1000}
+          className="flex-1 rounded-lg border border-ink-200 px-3 py-2 text-sm"
+        />
+        <Button onClick={() => add.mutate()} disabled={!body.trim() || add.isPending}>
+          Post
+        </Button>
+      </div>
+      {comments.isLoading && <Spinner />}
+      <div className="space-y-3">
+        {comments.data?.map((cm) => (
+          <div key={cm.id} className="rounded-lg bg-ink-50 px-3 py-2 text-sm">
+            <p>{cm.body}</p>
+            <p className="mt-0.5 text-xs text-ink-400">{new Date(cm.createdAt).toLocaleString()}</p>
+          </div>
+        ))}
+        {comments.data?.length === 0 && <p className="text-sm text-ink-400">Be the first to comment.</p>}
+      </div>
+    </Card>
   );
 }

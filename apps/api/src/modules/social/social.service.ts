@@ -35,6 +35,8 @@ export class SocialService {
           publishedAt: schema.comics.publishedAt,
           likeCount: sql<number>`COALESCE(${schema.comicStats.likeCount}, 0)`,
           commentCount: sql<number>`COALESCE(${schema.comicStats.commentCount}, 0)`,
+          likedByMe: sql<boolean>`EXISTS (SELECT 1 FROM likes l
+            WHERE l.comic_id = ${schema.comics.id} AND l.user_id = ${userId})`,
         })
         .from(schema.comics)
         .leftJoin(schema.comicStats, eq(schema.comicStats.comicId, schema.comics.id));
