@@ -87,6 +87,17 @@ pnpm build             # build everything via Turborepo
   storage → Postgres: a book and a reel generate end to end, credits debit,
   notifications fire, sharing + public read work
 
+### Production hardening (final)
+
+- [x] **Idempotency-Key enforced server-side** — claim-first interceptor: replayed
+  responses for repeated keys, 409 for in-flight duplicates, claim release on
+  failure (verified live: double-submit → one comic, one charge)
+- [x] **Rate limiting** — global throttle + 10/min cap on AI generation (verified 429)
+- [x] **Structured logging** — pino JSON request logs with secret redaction
+- [x] **Brand art in-repo** — AI-generated hero image, 5-style character strip, and
+  app icon (Higgsfield), fetched and committed by CI
+- [x] **Release config** — EAS build profiles, complete .env.example
+
 ## License
 
 Proprietary — © StoryMe. All rights reserved.
