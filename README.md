@@ -42,6 +42,15 @@ infrastructure/  docker/ terraform/ github-actions/ monitoring/
 docs/            architecture/ api/ deployment/ security/ runbooks/
 ```
 
+## Web preview (GitHub Pages)
+
+A static export of the web app is published to the `gh-pages` branch on every
+push that touches `apps/web` or `packages` (see
+`.github/workflows/deploy-pages.yml`). **One-time setup:** repo **Settings →
+Pages → Deploy from a branch → `gh-pages` / root**, then the preview serves at
+<https://kiran7891.github.io/StoryMe/>. The landing page (with brand art)
+renders fully; app screens are client shells since Pages hosts no backend.
+
 ## Getting started
 
 ```bash
