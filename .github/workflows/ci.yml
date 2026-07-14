@@ -58,6 +58,38 @@ jobs:
       - name: Test (unit + integration)
         run: pnpm test
 
+  brand-assets:
+    name: Fetch brand assets (one-time)
+    # The dev sandbox cannot reach the asset CDN; GitHub runners can. This job
+    # commits the generated art to the PR branch once, then no-ops forever.
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Fetch and commit assets if missing
+        run: |
+          if [ -f apps/web/public/brand/hero.webp ]; then
+            echo "Assets already present — nothing to do."
+            exit 0
+          fi
+          node scripts/fetch-brand-assets.mjs
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add apps/web/public/brand apps/mobile/assets
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -m "Add generated brand assets (automated CI fetch)"
+            git push origin HEAD:${{ github.head_ref }}
+          fi
+
   security:
     name: Dependency audit
     runs-on: ubuntu-latest
