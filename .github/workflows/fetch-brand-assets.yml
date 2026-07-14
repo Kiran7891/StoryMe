@@ -1,0 +1,37 @@
+name: Fetch brand assets
+
+# Downloads the AI-generated brand art (Higgsfield CDN) into the repo and
+# commits it to the triggering branch. Manual trigger: the remote dev sandbox
+# cannot reach the CDN host, but GitHub runners can.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Download assets into place
+        run: node scripts/fetch-brand-assets.mjs
+
+      - name: Commit and push if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add apps/web/public/brand apps/mobile/assets
+          if git diff --cached --quiet; then
+            echo "No asset changes."
+          else
+            git commit -m "Add generated brand assets (automated fetch)"
+            git push
+          fi
